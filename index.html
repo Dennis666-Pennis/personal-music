@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的原创音乐站</title>
+    <title>我的原创音乐 - 回忆</title>
     <style>
         * {
             margin: 0;
@@ -37,7 +37,7 @@
             height: 200px;
             border-radius: 10px;
             margin: 0 auto 25px;
-            background: #222 url('cover.jpg') center/cover no-repeat;
+            background: #222;
             border: 2px solid #d4af37;
         }
         .song-info {
@@ -132,281 +132,129 @@
             opacity: 1;
             font-weight: bold;
         }
-        .playlist {
-            margin-top: 20px;
-            background: #222;
-            border-radius: 8px;
-            padding: 15px;
-        }
-        .playlist-title {
-            color: #d4af37;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .song-item {
-            padding: 8px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .song-item:hover {
-            background: #333;
-        }
-        .song-item.active {
-            background: #d4af37;
-            color: #121212;
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
-    <h1>我的原创音乐空间</h1>
-
+    <h1>我的原创音乐</h1>
     <div class="music-container">
-        <div class="cover" id="cover"></div>
-        
+        <div class="cover"></div>
         <div class="song-info">
-            <div class="song-title" id="songTitle">未播放歌曲</div>
-            <div class="song-singer" id="songSinger">未知歌手</div>
+            <div class="song-title" id="songTitle">回忆</div>
+            <div class="song-singer" id="songSinger">James/H</div>
         </div>
-
         <div class="progress" id="progress">
             <div class="progress-bar" id="progressBar"></div>
         </div>
-
         <div class="time">
             <span id="currentTime">00:00</span>
             <span id="duration">00:00</span>
         </div>
-
         <div class="controls">
-            <button class="btn" id="prevBtn">◀</button>
             <button class="btn" id="playBtn">▶</button>
-            <button class="btn" id="nextBtn">▶▶</button>
         </div>
-
-        <div class="lyrics" id="lyrics">
-            <div class="lyric-line">等待播放歌曲...</div>
-        </div>
-
-        <div class="playlist">
-            <div class="playlist-title">我的原创歌曲</div>
-            <div class="song-item active" data-index="0">歌曲1 - 我的第一首歌</div>
-            <div class="song-item" data-index="1">歌曲2 - 深夜独白</div>
-            <div class="song-item" data-index="2">歌曲3 - 夏日记忆</div>
-        </div>
+        <div class="lyrics" id="lyrics"></div>
     </div>
 
     <script>
-        // 歌曲数据配置（这里可以添加你自己的歌曲）
-        const songs = [
-            {
-                title: "回忆",
-                singer: "陈以文",
-                audio: "music/Song1Memories.mp3",
-                cover: "covers/cover1.jpg",
-                lyrics: [
-                    {time: 0, text: "回忆"},
-                    {time: 2, text: "作词：穆华恩、陈以文"},
-                    {time: 4, text: "演唱：陈以文"},
-                    {time: 6, text: "当我拿起笔 写下这段旋律"},
-                    {time: 10, text: "心中的话 终于可以表达"},
-                    {time: 14, text: "每一个音符 都是我的心情"},
-                    {time: 18, text: "每一句歌词 都有我的故事"},
-                    {time: 22, text: "这是我的歌 写给我自己"},
-                    {time: 26, text: "也是写给 所有懂我的人"},
-                    {time: 30, text: "希望你们能听到 我的声音"},
-                    {time: 34, text: "感受到我 最真实的情感"}
-                ]
-            },
-            {
-                title: "深夜独白",
-                singer: "穆华恩",
-                audio: "music/song2.mp3",
-                cover: "covers/cover2.jpg",
-                lyrics: [
-                    {time: 0, text: "深夜独白"},
-                    {time: 2, text: "作词：穆华恩"},
-                    {time: 4, text: "作曲：穆华恩"},
-                    {time: 6, text: "夜深人静 我独自坐在窗前"},
-                    {time: 10, text: "看着窗外 闪烁的星光点点"},
-                    {time: 14, text: "心中的思绪 像潮水般涌现"},
-                    {time: 18, text: "有太多的话 想对自己说"},
-                    {time: 22, text: "这是我的独白 在深夜里蔓延"},
-                    {time: 26, text: "没有听众 只有我自己听见"},
-                    {time: 30, text: "也许明天 一切都会改变"},
-                    {time: 34, text: "但此刻的我 只想真实一点"}
-                ]
-            },
-            {
-                title: "夏日记忆",
-                singer: "穆华恩",
-                audio: "music/song3.mp3",
-                cover: "covers/cover3.jpg",
-                lyrics: [
-                    {time: 0, text: "夏日记忆"},
-                    {time: 2, text: "作词：穆华恩"},
-                    {time: 4, text: "作曲：穆华恩"},
-                    {time: 6, text: "那年夏天 阳光格外耀眼"},
-                    {time: 10, text: "我们一起 走过了那条街"},
-                    {time: 14, text: "冰淇淋融化 在嘴角的甜"},
-                    {time: 18, text: "是我记忆里 最美好的画面"},
-                    {time: 22, text: "如今的我 还时常会想念"},
-                    {time: 26, text: "那些日子 简单又很纯粹"},
-                    {time: 30, text: "虽然已经过去 很多年"},
-                    {time: 34, text: "那份温暖 依然在我心间"}
-                ]
-            }
-        ];
-
-        // 初始化播放器
-        const audio = new Audio();
-        let currentSongIndex = 0;
+        const audio = new Audio("Song1Memories.mp3");
         let isPlaying = false;
 
-        // DOM元素
-        const playBtn = document.getElementById('playBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const progress = document.getElementById('progress');
-        const progressBar = document.getElementById('progressBar');
-        const currentTimeEl = document.getElementById('currentTime');
-        const durationEl = document.getElementById('duration');
-        const songTitle = document.getElementById('songTitle');
-        const songSinger = document.getElementById('songSinger');
-        const cover = document.getElementById('cover');
-        const lyrics = document.getElementById('lyrics');
-        const songItems = document.querySelectorAll('.song-item');
-
-        // 加载歌曲
-        function loadSong(song) {
-            songTitle.textContent = song.title;
-            songSinger.textContent = song.singer;
-            audio.src = song.audio;
-            cover.style.background = `#222 url('${song.cover}') center/cover no-repeat`;
-            
-            // 加载歌词
-            loadLyrics(song.lyrics);
-        }
+        // 完整歌词（你给的《回忆》全文）
+        const lyrics = [
+            {time:0, text:"回忆"},
+            {time:1, text:"作词:James/H 作曲:James/H"},
+            {time:3, text:"编曲:James 制作人:James"},
+            {time:5, text:"陪唱:James"},
+            {time:7, text:"过往的回忆"},
+            {time:9, text:"都已成过去"},
+            {time:11, text:"你留下的痕迹"},
+            {time:13, text:"触动我的心"},
+            {time:15, text:"你留下的东西"},
+            {time:17, text:"我还 舍不得丢弃"},
+            {time:19, text:"你的身影 在脑海里 挥之不去"},
+            {time:23, text:"想起我们当时有那么的甜蜜"},
+            {time:27, text:"为何我们会变得如此疏离"},
+            {time:31, text:"可能因为有事情就选择去逃避"},
+            {time:35, text:"何必"},
+            {time:37, text:"淡忘的记忆"},
+            {time:39, text:"想也想不起"},
+            {time:41, text:"关于你的一切"},
+            {time:43, text:"我都渐渐的忘记"},
+            {time:45, text:"我的世界里"},
+            {time:47, text:"又只剩下自己"},
+            {time:49, text:"想你"},
+            {time:53, text:"想起我们当时有那么的甜蜜"},
+            {time:57, text:"为何我们会变得如此疏离"},
+            {time:61, text:"可能因为有事情就选择去逃避"},
+            {time:65, text:"何必"},
+            {time:67, text:"怎么回事呢"},
+            {time:69, text:"我还爱你呢"},
+            {time:71, text:"我们还有没有可能在一起呢"},
+            {time:75, text:"在一起呢"},
+            {time:77, text:"真的想你了"},
+            {time:79, text:"不可自拔了"},
+            {time:81, text:"你会不会又突然想起我呢"},
+            {time:85, text:"想起我呢"}
+        ];
 
         // 加载歌词
-        function loadLyrics(lyricData) {
-            lyrics.innerHTML = '';
-            lyricData.forEach(lyric => {
-                const line = document.createElement('div');
-                line.className = 'lyric-line';
-                line.dataset.time = lyric.time;
-                line.textContent = lyric.text;
-                lyrics.appendChild(line);
+        function loadLyrics(){
+            const box = document.getElementById("lyrics");
+            lyrics.forEach(item=>{
+                let div = document.createElement("div");
+                div.className = "lyric-line";
+                div.dataset.time = item.time;
+                div.innerText = item.text;
+                box.appendChild(div);
             });
         }
 
-        // 播放/暂停
-        function togglePlay() {
-            if (isPlaying) {
+        // 播放暂停
+        document.getElementById("playBtn").onclick = function(){
+            if(isPlaying){
                 audio.pause();
-                playBtn.textContent = '▶';
-            } else {
+                this.innerText = "▶";
+            }else{
                 audio.play();
-                playBtn.textContent = '❙❙';
+                this.innerText = "❙❙";
             }
             isPlaying = !isPlaying;
         }
 
-        // 切换歌曲
-        function changeSong(direction) {
-            currentSongIndex = (currentSongIndex + direction + songs.length) % songs.length;
-            loadSong(songs[currentSongIndex]);
-            updateActiveSongItem();
-            
-            if (isPlaying) {
-                audio.play();
-            }
+        // 进度条
+        audio.addEventListener("timeupdate",function(){
+            let percent = (this.currentTime / this.duration) * 100;
+            document.getElementById("progressBar").style.width = percent + "%";
+            document.getElementById("currentTime").innerText = formatTime(this.currentTime);
+            document.getElementById("duration").innerText = formatTime(this.duration);
+            syncLyric(this.currentTime);
+        });
+
+        function formatTime(t){
+            let m = Math.floor(t/60).toString().padStart(2,"0");
+            let s = Math.floor(t%60).toString().padStart(2,"0");
+            return m+":"+s;
         }
 
-        // 更新播放列表选中状态
-        function updateActiveSongItem() {
-            songItems.forEach(item => item.classList.remove('active'));
-            songItems[currentSongIndex].classList.add('active');
-        }
-
-        // 更新进度条
-        function updateProgress(e) {
-            const { duration, currentTime } = e.srcElement;
-            const progressPercent = (currentTime / duration)*100;
-            progressBar.style.width = `${progressPercent}%`;
-
-            // 更新时间显示
-            currentTimeEl.textContent = formatTime(currentTime);
-            durationEl.textContent = formatTime(duration);
-
-            // 同步歌词
-            syncLyrics(currentTime);
-        }
-
-        // 格式化时间
-        function formatTime(time) {
-            const minutes = Math.floor(time / 60);
-            const seconds = Math.floor(time % 60);
-            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        // 歌词同步
-        function syncLyrics(currentTime) {
-            const lyricLines = document.querySelectorAll('.lyric-line');
-            let activeLineIndex = -1;
-
-            lyricLines.forEach((line, index) => {
-                const lineTime = parseFloat(line.dataset.time);
-                if (currentTime >= lineTime) {
-                    activeLineIndex = index;
-                }
-            });
-
-            if (activeLineIndex !== -1) {
-                lyricLines.forEach(line => line.classList.remove('active'));
-                lyricLines[activeLineIndex].classList.add('active');
-                
-                // 滚动歌词
-                if (activeLineIndex > 3) {
-                    lyrics.scrollTop = (activeLineIndex - 3)*30;
-                } else {
-                    lyrics.scrollTop = 0;
+        // 歌词同步高亮
+        function syncLyric(current){
+            let lines = document.querySelectorAll(".lyric-line");
+            lines.forEach(line=>line.classList.remove("active"));
+            for(let i=0;i<lines.length;i++){
+                if(current >= lines[i].dataset.time){
+                    lines[i].classList.add("active");
+                    lines[i].scrollIntoView({behavior:"smooth",block:"center"});
                 }
             }
         }
 
         // 进度条点击跳转
-        function setProgress(e) {
-            const width = this.clientWidth;
-            const clickX = e.offsetX;
-            const duration = audio.duration;
-            audio.currentTime = (clickX / width) * duration;
+        document.getElementById("progress").onclick = function(e){
+            let pos = e.offsetX / this.offsetWidth;
+            audio.currentTime = pos * audio.duration;
         }
 
-        // 事件监听
-        playBtn.addEventListener('click', togglePlay);
-        prevBtn.addEventListener('click', () => changeSong(-1));
-        nextBtn.addEventListener('click', () => changeSong(1));
-        audio.addEventListener('timeupdate', updateProgress);
-        audio.addEventListener('ended', () => changeSong(1));
-        progress.addEventListener('click', setProgress);
-        
-        // 播放列表点击
-        songItems.forEach(item => {
-            item.addEventListener('click', () => {
-                currentSongIndex = parseInt(item.dataset.index);
-                loadSong(songs[currentSongIndex]);
-                updateActiveSongItem();
-                if (isPlaying) {
-                    audio.play();
-                }
-            });
-        });
-
-        // 初始化加载第一首歌
-        loadSong(songs[currentSongIndex]);
-        updateActiveSongItem();
+        loadLyrics();
     </script>
 </body>
 </html>
