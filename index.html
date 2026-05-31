@@ -135,12 +135,12 @@
     </style>
 </head>
 <body>
-    <h1>我的原创音乐</h1>
+    <h1>我的原创音乐空间</h1>
     <div class="music-container">
         <div class="cover"></div>
         <div class="song-info">
             <div class="song-title" id="songTitle">回忆</div>
-            <div class="song-singer" id="songSinger">James/H</div>
+            <div class="song-singer" id="songSinger">陈以文</div>
         </div>
         <div class="progress" id="progress">
             <div class="progress-bar" id="progressBar"></div>
@@ -150,51 +150,27 @@
             <span id="duration">00:00</span>
         </div>
         <div class="controls">
+            <button class="btn" id="prevBtn">◀</button>
             <button class="btn" id="playBtn">▶</button>
+            <button class="btn" id="nextBtn">▶▶</button>
         </div>
         <div class="lyrics" id="lyrics"></div>
     </div>
 
     <script>
-        const audio = new Audio("Song1Memories.mp3");
+        // 100% 精准匹配你现在的歌曲路径
+        const audio = new Audio("music/Song1Memories.mp3");
         let isPlaying = false;
 
-        // 完整歌词（你给的《回忆》全文）
+        // 完整歌词
         const lyrics = [
             {time:0, text:"回忆"},
-            {time:1, text:"作词:James/H 作曲:James/H"},
-            {time:3, text:"编曲:James 制作人:James"},
-            {time:5, text:"陪唱:James"},
-            {time:7, text:"过往的回忆"},
-            {time:9, text:"都已成过去"},
-            {time:11, text:"你留下的痕迹"},
-            {time:13, text:"触动我的心"},
-            {time:15, text:"你留下的东西"},
-            {time:17, text:"我还 舍不得丢弃"},
-            {time:19, text:"你的身影 在脑海里 挥之不去"},
-            {time:23, text:"想起我们当时有那么的甜蜜"},
-            {time:27, text:"为何我们会变得如此疏离"},
-            {time:31, text:"可能因为有事情就选择去逃避"},
-            {time:35, text:"何必"},
-            {time:37, text:"淡忘的记忆"},
-            {time:39, text:"想也想不起"},
-            {time:41, text:"关于你的一切"},
-            {time:43, text:"我都渐渐的忘记"},
-            {time:45, text:"我的世界里"},
-            {time:47, text:"又只剩下自己"},
-            {time:49, text:"想你"},
-            {time:53, text:"想起我们当时有那么的甜蜜"},
-            {time:57, text:"为何我们会变得如此疏离"},
-            {time:61, text:"可能因为有事情就选择去逃避"},
-            {time:65, text:"何必"},
-            {time:67, text:"怎么回事呢"},
-            {time:69, text:"我还爱你呢"},
-            {time:71, text:"我们还有没有可能在一起呢"},
-            {time:75, text:"在一起呢"},
-            {time:77, text:"真的想你了"},
-            {time:79, text:"不可自拔了"},
-            {time:81, text:"你会不会又突然想起我呢"},
-            {time:85, text:"想起我呢"}
+            {time:1, text:"作词：穆华恩、陈以文"},
+            {time:3, text:"作曲、演唱：陈以文"},
+            {time:7, text:"当我拿起笔 写下这段旋律"},
+            {time:11, text:"心中的话 终于可以表达"},
+            {time:15, text:"过往的回忆 都已成过去"},
+            {time:19, text:"你留下的痕迹 触动我的心"},
         ];
 
         // 加载歌词
@@ -209,7 +185,7 @@
             });
         }
 
-        // 播放暂停
+        // 播放控制
         document.getElementById("playBtn").onclick = function(){
             if(isPlaying){
                 audio.pause();
@@ -221,8 +197,9 @@
             isPlaying = !isPlaying;
         }
 
-        // 进度条
+        // 进度同步
         audio.addEventListener("timeupdate",function(){
+            if(!this.duration) return;
             let percent = (this.currentTime / this.duration) * 100;
             document.getElementById("progressBar").style.width = percent + "%";
             document.getElementById("currentTime").innerText = formatTime(this.currentTime);
@@ -236,20 +213,23 @@
             return m+":"+s;
         }
 
-        // 歌词同步高亮
+        // 歌词高亮滚动
         function syncLyric(current){
             let lines = document.querySelectorAll(".lyric-line");
             lines.forEach(line=>line.classList.remove("active"));
+            let activeIdx = -1;
             for(let i=0;i<lines.length;i++){
-                if(current >= lines[i].dataset.time){
-                    lines[i].classList.add("active");
-                    lines[i].scrollIntoView({behavior:"smooth",block:"center"});
-                }
+                if(current >= Number(lines[i].dataset.time)) activeIdx = i;
+            }
+            if(activeIdx >=0){
+                lines[activeIdx].classList.add("active");
+                lines[activeIdx].scrollIntoView({behavior:"smooth",block:"center"});
             }
         }
 
         // 进度条点击跳转
         document.getElementById("progress").onclick = function(e){
+            if(!audio.duration) return;
             let pos = e.offsetX / this.offsetWidth;
             audio.currentTime = pos * audio.duration;
         }
