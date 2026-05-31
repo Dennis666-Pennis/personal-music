@@ -42,7 +42,7 @@
         }
         .song-info {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
         .song-title {
             font-size: 24px;
@@ -53,6 +53,11 @@
         .song-singer {
             font-size: 16px;
             color: #888;
+        }
+        .loading {
+            text-align:center;
+            color:#888;
+            margin-bottom:20px;
         }
         .controls {
             display: flex;
@@ -99,7 +104,7 @@
             justify-content: space-between;
             font-size: 14px;
             color: #888;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .lyrics {
             height: 160px;
@@ -110,19 +115,9 @@
             padding: 10px;
             background: #222;
             border-radius: 8px;
-            margin-bottom: 25px;
         }
-        .lyrics::-webkit-scrollbar {
-            width: 5px;
-        }
-        .lyrics::-webkit-scrollbar-track {
-            background: #333;
-            border-radius: 5px;
-        }
-        .lyrics::-webkit-scrollbar-thumb {
-            background: #d4af37;
-            border-radius: 5px;
-        }
+        .lyrics::-webkit-scrollbar { width: 5px; }
+        .lyrics::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 5px; }
         .lyric-line {
             transition: 0.3s;
             opacity: 0.6;
@@ -139,9 +134,11 @@
     <div class="music-container">
         <div class="cover"></div>
         <div class="song-info">
-            <div class="song-title" id="songTitle">回忆</div>
-            <div class="song-singer" id="songSinger">陈以文</div>
+            <div class="song-title">回忆</div>
+            <div class="song-singer">陈以文</div>
         </div>
+        <div class="loading" id="loadTip">歌曲加载中...</div>
+
         <div class="progress" id="progress">
             <div class="progress-bar" id="progressBar"></div>
         </div>
@@ -149,21 +146,21 @@
             <span id="currentTime">00:00</span>
             <span id="duration">00:00</span>
         </div>
+
         <div class="controls">
-            <button class="btn" id="prevBtn">◀</button>
             <button class="btn" id="playBtn">▶</button>
-            <button class="btn" id="nextBtn">▶▶</button>
         </div>
-        <div class="lyrics" id="lyrics"></div>
+
+        <div class="lyrics" id="lyricsBox"></div>
     </div>
 
     <script>
-        // 100% 精准匹配你现在的歌曲路径
-        const audio = new Audio("music/Song1Memories.mp3");
-        let isPlaying = false;
+        // 精准匹配你改名后的歌曲
+        const audio = new Audio("music/song1.mp3");
+        let isPlay = false;
 
         // 完整歌词
-        const lyrics = [
+        const lyricList = [
             {time:0, text:"回忆"},
             {time:1, text:"作词：穆华恩、陈以文"},
             {time:3, text:"作曲、演唱：陈以文"},
@@ -171,70 +168,54 @@
             {time:11, text:"心中的话 终于可以表达"},
             {time:15, text:"过往的回忆 都已成过去"},
             {time:19, text:"你留下的痕迹 触动我的心"},
+            {time:23, text:"想起我们当时有那么的甜蜜"},
+            {time:27, text:"为何我们会变得如此疏离"}
         ];
 
-        // 加载歌词
-        function loadLyrics(){
-            const box = document.getElementById("lyrics");
-            lyrics.forEach(item=>{
-                let div = document.createElement("div");
-                div.className = "lyric-line";
-                div.dataset.time = item.time;
-                div.innerText = item.text;
-                box.appendChild(div);
-            });
+        // 渲染歌词
+        function initLyric(){
+            lyricList.forEach(l=>{
+                const div = document.createElement('div');
+                div.className = 'lyric-line';
+                div.dataset.t = l.time;
+                div.innerText = l.text;
+                lyricsBox.appendChild(div);
+            })
         }
 
-        // 播放控制
-        document.getElementById("playBtn").onclick = function(){
-            if(isPlaying){
+        // 播放/暂停
+        playBtn.onclick = ()=>{
+            if(isPlay){
                 audio.pause();
-                this.innerText = "▶";
+                playBtn.innerText = "▶";
             }else{
                 audio.play();
-                this.innerText = "❙❙";
+                playBtn.innerText = "❙❙";
             }
-            isPlaying = !isPlaying;
+            isPlay = !isPlay;
         }
 
-        // 进度同步
-        audio.addEventListener("timeupdate",function(){
-            if(!this.duration) return;
-            let percent = (this.currentTime / this.duration) * 100;
-            document.getElementById("progressBar").style.width = percent + "%";
-            document.getElementById("currentTime").innerText = formatTime(this.currentTime);
-            document.getElementById("duration").innerText = formatTime(this.duration);
-            syncLyric(this.currentTime);
-        });
-
-        function formatTime(t){
-            let m = Math.floor(t/60).toString().padStart(2,"0");
-            let s = Math.floor(t%60).toString().padStart(2,"0");
-            return m+":"+s;
+        // 加载完成提示
+        audio.oncanplaythrough = ()=>{
+            document.getElementById('loadTip').innerText = "歌曲已就绪，点击播放";
         }
 
-        // 歌词高亮滚动
-        function syncLyric(current){
-            let lines = document.querySelectorAll(".lyric-line");
-            lines.forEach(line=>line.classList.remove("active"));
-            let activeIdx = -1;
-            for(let i=0;i<lines.length;i++){
-                if(current >= Number(lines[i].dataset.time)) activeIdx = i;
-            }
-            if(activeIdx >=0){
-                lines[activeIdx].classList.add("active");
-                lines[activeIdx].scrollIntoView({behavior:"smooth",block:"center"});
-            }
+        // 进度+歌词同步
+        audio.ontimeupdate = e=>{
+            const t = audio.currentTime;
+            const all = audio.duration;
+            progressBar.style.width = `${(t/all)*100}%`;
+            currentTime.innerText = `${Math.floor(t/60).toString().padStart(2,'0')}:${Math.floor(t%60).toString().padStart(2,'0')}`;
+            duration.innerText = `${Math.floor(all/60).toString().padStart(2,'0')}:${Math.floor(all%60).toString().padStart(2,'0')}`;
+
+            // 歌词高亮
+            document.querySelectorAll('.lyric-line').forEach(line=>line.classList.remove('active'));
+            lyricList.forEach((l,i)=>{
+                if(t >= l.time) document.querySelectorAll('.lyric-line')[i].classList.add('active');
+            })
         }
 
-        // 进度条点击跳转
-        document.getElementById("progress").onclick = function(e){
-            if(!audio.duration) return;
-            let pos = e.offsetX / this.offsetWidth;
-            audio.currentTime = pos * audio.duration;
-        }
-
-        loadLyrics();
+        initLyric();
     </script>
 </body>
 </html>
